@@ -1,0 +1,4 @@
+# Optional: the LLM brief, its tracing, and a ClickHouse server / Cloud store
+mistralai
+langfuse
+clickhouse-connect

@@ -7,3 +7,5 @@ data/
 .chdb/
 .env
 .pytest_cache/
+results/tomorrow.csv
+results/brief.md

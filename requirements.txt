@@ -1,0 +1,8 @@
+timestral @ git+https://github.com/mistralai/timestral.git
+numpy
+pandas>=2.1
+requests
+matplotlib
+duckdb
+chdb; platform_system != "Windows"
+pytest
