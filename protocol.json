@@ -1,0 +1,44 @@
+{
+  "name": "timestral-vs-rte day-ahead backtest",
+  "version": 1,
+  "target": "French national electricity consumption (MW), hourly mean of RTE eco2mix definitive data",
+  "data": {
+    "source": "RTE eco2mix via ODRE open data (dataset eco2mix-national-cons-def)",
+    "start": "2023-01-01T00:00:00Z",
+    "end": "2026-09-01T00:00:00Z"
+  },
+  "task": {
+    "description": "For each test day D (UTC), forecast the 24 hourly values of D using only data observed up to D-1 12:00 UTC, about when RTE's own day-ahead (J-1) forecast is available.",
+    "cutoff_hour_utc_on_previous_day": 12,
+    "lead_hours_skipped": 12,
+    "scored_hours": 24
+  },
+  "test_days": {
+    "first": "2026-06-01",
+    "last": "2026-08-31"
+  },
+  "models": {
+    "timestral": {
+      "checkpoint": "mistralai/Timestral-28M",
+      "context_hours": 4096,
+      "covariates": "none"
+    },
+    "timestral_calendar": {
+      "checkpoint": "mistralai/Timestral-28M",
+      "context_hours": 4096,
+      "covariates": "known future calendar features: hour of day (sin, cos), day of week (sin, cos), weekend flag"
+    },
+    "rte_j1": "RTE's official day-ahead forecast (prevision_j1), hourly mean, as published",
+    "naive_weekly": "value at the same hour 7 days earlier",
+    "naive_2day": "value at the same hour 2 days earlier (the latest same-hour value available at the cutoff)"
+  },
+  "metrics": {
+    "primary": "MAE in MW over all scored hours",
+    "secondary": ["MAPE (%)", "MASE relative to naive_weekly", "coverage of the 10-90% quantile interval (Timestral only)", "share of days where the model beats rte_j1 on daily MAE"]
+  },
+  "rules": [
+    "This file is committed before the first backtest run; results record its SHA-256.",
+    "No tuning on the test window. The checkpoint and context length were chosen before running.",
+    "Context windows never include data after the cutoff (checked by tests/test_leakage.py)."
+  ]
+}
